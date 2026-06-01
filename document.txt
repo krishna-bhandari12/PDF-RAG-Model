@@ -1,0 +1,263 @@
+PDF Chat Assistant (RAG) - Full Project Roadmap
+
+Project Goal
+Build a PDF chat assistant where a user can upload one or more PDF files, ask natural language questions, and receive answers grounded in the uploaded documents using Retrieval-Augmented Generation (RAG).
+
+What the system should do
+1. Accept PDF uploads from the user.
+2. Extract text from the PDFs.
+3. Split the extracted text into chunks.
+4. Convert chunks into embeddings.
+5. Store embeddings in a vector database.
+6. Perform similarity search when the user asks a question.
+7. Send the retrieved chunks plus the question to an LLM such as GPT.
+8. Return a clear answer with document-backed context.
+
+Core Concepts Covered
+1. RAG: retrieve relevant document chunks first, then generate the answer.
+2. Embeddings: numeric representation of text for semantic search.
+3. Vector Search: find the most similar text chunks to the user query.
+4. OpenAI: used for embeddings and answer generation.
+5. LangChain: used to orchestrate loading, chunking, retrieval, and prompting.
+
+Recommended Tech Stack
+Frontend:
+- React or Next.js
+- Tailwind CSS or plain CSS for UI
+- File upload component
+- Chat interface
+
+Backend:
+- Node.js with Express or Next.js API routes
+- PDF parsing library such as pdf-parse or pdfjs-dist
+- LangChain for document processing and retrieval
+- OpenAI API for embeddings and chat completions
+
+Vector Database Options:
+- Chroma for local development
+- Pinecone for managed cloud setup
+- FAISS for local prototype
+- Supabase pgvector if you want Postgres-based storage
+
+Database / Storage:
+- Local file storage for PDFs in development
+- Cloud storage such as AWS S3 or Cloudinary for production
+
+Deployment:
+- Vercel for frontend and serverless backend
+- Render, Railway, or Docker-based deployment for full backend control
+
+Suggested Project Architecture
+1. Upload PDF
+   User uploads a file from the frontend.
+2. Extract Text
+   Backend reads the PDF and extracts the text.
+3. Chunking
+   The extracted text is split into overlapping chunks so retrieval works well.
+4. Embeddings
+   Each chunk is converted into embeddings using an embedding model.
+5. Store in Vector DB
+   Chunk embeddings and metadata are stored in the vector database.
+6. Question Answering
+   When the user asks a question, the backend embeds the question.
+7. Similarity Search
+   The vector DB returns the most relevant chunks.
+8. Prompt GPT
+   The retrieved chunks and the question are added to a structured prompt.
+9. Generate Answer
+   GPT generates a grounded answer based only on the retrieved context.
+10. Return Response
+   The frontend displays the answer and optionally the source chunks.
+
+Development Roadmap
+Phase 1 - Planning and Setup
+- Define scope: single PDF or multiple PDFs.
+- Decide if answers need citations.
+- Choose stack: Next.js, LangChain, OpenAI, Chroma.
+- Create project structure.
+- Configure environment variables.
+- Set up OpenAI API key securely.
+
+Phase 2 - PDF Upload and Parsing
+- Build upload UI.
+- Validate file type and size.
+- Store uploaded PDFs temporarily or persistently.
+- Extract text from PDF pages.
+- Handle scanned PDFs if needed using OCR later.
+
+Phase 3 - Document Chunking
+- Split text into chunks.
+- Use overlap between chunks to preserve context.
+- Tune chunk size based on document type.
+- Keep metadata such as file name, page number, and chunk index.
+
+Recommended chunking settings:
+- Chunk size: 800 to 1200 characters or around 500 to 800 tokens
+- Chunk overlap: 100 to 200 characters
+
+Phase 4 - Embeddings and Vector Store
+- Generate embeddings for each chunk.
+- Store embeddings in the vector database.
+- Associate each vector with metadata.
+- Test retrieval quality with sample questions.
+
+Phase 5 - Question Answering Flow
+- Build chat input UI.
+- Send user question to backend.
+- Embed the question.
+- Retrieve top-k similar chunks.
+- Build prompt with context and question.
+- Call GPT to generate an answer.
+- Return answer and sources.
+
+Phase 6 - Response Quality Improvements
+- Add a system prompt that forces answers to stay within the document context.
+- Reject unsupported answers with a fallback response like: "I could not find that in the uploaded document."
+- Add citations or source references.
+- Support follow-up questions using chat history.
+
+Phase 7 - UI/UX Enhancements
+- Show upload progress.
+- Show processing status.
+- Display chat history.
+- Display source pages or snippets.
+- Add loading indicators and error handling.
+- Add a clean two-panel layout: documents on one side, chat on the other.
+
+Phase 8 - Testing
+- Test PDF upload with small and large files.
+- Test text extraction on multiple PDF formats.
+- Test chunking logic.
+- Test retrieval accuracy.
+- Test hallucination resistance.
+- Test error handling when no relevant chunk is found.
+
+Phase 9 - Deployment
+- Move API keys to environment variables.
+- Choose hosting for vector DB and app.
+- Set upload limits.
+- Add logging and monitoring.
+- Deploy frontend and backend.
+
+Phase 10 - Production Hardening
+- Add authentication if documents are private.
+- Add rate limiting.
+- Encrypt sensitive files if needed.
+- Add document deletion.
+- Add usage analytics and audit logs.
+- Add observability for latency and token usage.
+
+Recommended Folder Structure
+- src/
+  - components/
+  - pages/ or app/
+  - lib/
+  - api/
+  - utils/
+- backend/
+  - routes/
+  - services/
+  - loaders/
+  - vectorstore/
+  - prompts/
+- data/
+  - uploads/
+  - indexes/
+
+Important Implementation Details
+1. Use overlapping chunks so semantic meaning is preserved across boundaries.
+2. Store page numbers in metadata so answers can show citations.
+3. Use top-k retrieval, usually 3 to 5 chunks.
+4. Keep the prompt strict so the model does not invent answers.
+5. If the document is large, process it asynchronously.
+6. Cache embeddings when possible to reduce cost.
+7. Separate upload processing from chat answering for better performance.
+
+Example Processing Flow
+- User uploads a PDF.
+- Backend extracts text from each page.
+- Text is split into chunks.
+- Each chunk is embedded and stored.
+- User asks a question.
+- Question embedding is generated.
+- Similar chunks are retrieved.
+- GPT receives chunks plus question.
+- GPT answers using only the retrieved content.
+
+Prompting Strategy
+Use a system prompt similar to this:
+- You are a helpful assistant that answers only from the provided context.
+- If the answer is not in the context, say you do not know.
+- Keep the answer concise and accurate.
+- Include source references if available.
+
+Milestone Breakdown
+Milestone 1:
+- Basic UI with file upload and chat input.
+- PDF text extraction working.
+
+Milestone 2:
+- Chunking and embeddings pipeline.
+- Vector database integration.
+
+Milestone 3:
+- Retrieval and GPT answer generation.
+- Basic citations.
+
+Milestone 4:
+- Better UI, history, and loading states.
+- Error handling and edge cases.
+
+Milestone 5:
+- Deployment, logging, and security hardening.
+
+Common Challenges
+1. Poor chunking can reduce answer quality.
+2. Scanned PDFs may require OCR.
+3. Very large PDFs can increase cost and latency.
+4. The model may hallucinate if the prompt is weak.
+5. Retrieval quality depends heavily on embeddings and chunk size.
+
+How to Evaluate Success
+- Answers are grounded in the PDF.
+- Retrieval returns the right context.
+- Users can upload PDFs without errors.
+- The system responds quickly enough for interactive use.
+- The app gracefully handles missing or irrelevant context.
+
+Optional Advanced Features
+- Multi-PDF chat
+- Page-level citations
+- Conversation memory
+- Document summarization
+- OCR support for scanned files
+- User authentication
+- Shareable chat sessions
+- Highlight source text in the PDF viewer
+- Support for DOCX and TXT later
+
+Suggested First Build Order
+1. Build upload UI.
+2. Extract text from PDF.
+3. Split text into chunks.
+4. Create embeddings.
+5. Store chunks in vector DB.
+6. Add question answering.
+7. Improve prompt and citations.
+8. Add polish, errors, and deployment.
+
+Final Recommendation
+If you are building this as a learning project, start with a local prototype using:
+- Next.js for UI and API routes
+- pdf-parse for text extraction
+- LangChain for chunking and retrieval
+- OpenAI embeddings and chat models
+- Chroma or FAISS for vector storage
+
+If you want a production-ready version, move to:
+- Authenticated backend
+- Cloud file storage
+- Managed vector database
+- Logging, rate limits, and monitoring
+
+This roadmap gives you the full path from idea to production-ready PDF chat assistant.

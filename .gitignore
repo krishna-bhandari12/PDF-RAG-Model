@@ -1,0 +1,9 @@
+.next
+node_modules
+.env
+.env.example
+.env.local
+.env.*.local
+data/uploads
+data/documents
+npm-debug.log*
